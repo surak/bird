@@ -1,3 +1,4 @@
+# This uses the Caltech bird database: http://www.vision.caltech.edu/visipedia
 import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -7,9 +8,7 @@ import numpy as np
 print("TensorFlow version: {}".format(tf.__version__))
 print("Eager execution: {}".format(tf.executing_eagerly()))
 
-
 data_location="/media/ssd/strube1/CUB_200_2011"
-
 train_dataset_fp = "%s/images.txt" % data_location
 
 
