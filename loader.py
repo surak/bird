@@ -26,11 +26,3 @@ bounding_boxes=pd.read_csv("%s/bounding_boxes.txt" % data_location, sep=' ', hea
 bounding_boxes.index=bounding_boxes.index+1
 
 classes[1][labels[1][images[0][555]]]
-
-
-train_dataset = tf.data.experimental.make_csv_dataset(
-    train_dataset_fp,
-    batch_size,
-    column_names=column_names,
-    label_name=label_name,
-    num_epochs=1)
