@@ -1,12 +1,6 @@
-[submodule "ONNX-YOLOv7-Object-Detection"]
-	path = ONNX-YOLOv7-Object-Detection
-	url = https://github.com/ibaiGorordo/ONNX-YOLOv7-Object-Detection.git
 [submodule "libcamera"]
 	path = libcamera
 	url = git://linuxtv.org/libcamera.git
 [submodule "PCA9685"]
 	path = PCA9685
 	url = https://github.com/ArduCAM/PCA9685.git
-[submodule "PINTO_model_zoo"]
-	path = PINTO_model_zoo
-	url = https://github.com/PINTO0309/PINTO_model_zoo.git

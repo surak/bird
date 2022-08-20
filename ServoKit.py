@@ -37,6 +37,10 @@ class ServoKit(object):
         self.resetAll()
         print("Initializing complete.")
 
+    # Motor (port) 0 vertical (0 is looking down )
+    # Motor 1 horizontal (0 is looking left)
+    # Setangle goes between 0 and 180
+
     def setAngle(self, port, angle):
         if angle < 0:
             self.kit.servo[port].angle = 0
