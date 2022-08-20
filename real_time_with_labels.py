@@ -1,24 +1,5 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2022 Raspberry Pi Ltd
-# Author: Alasdair Allan <alasdair@raspberrypi.com>
-# SPDX-License-Identifier: BSD-3-Clause
-
-# A TensorFlow Lite example for Picamera2 on Raspberry Pi OS Bullseye
-#
-# Install necessary dependences before starting,
-#
-# $ sudo apt update
-# $ sudo apt install build-essentials
-# $ sudo apt install libatlas-base-dev
-# $ sudo apt install python3-pip
-# $ pip3 install tflite-runtime
-# $ pip3 install opencv-python==4.4.0.46
-# $ pip3 install pillow
-# $ pip3 install numpy
-#
-# and run from the command line,
-#
 # $ python3 real_time_with_labels.py --model mobilenet_v2.tflite --label coco_labels.txt
 
 import argparse
