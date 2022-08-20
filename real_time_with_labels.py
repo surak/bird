@@ -35,12 +35,12 @@ from picamera2 import MappedArray, Picamera2, Preview
 
 from ServoKit import *
 
-
 servoKit = ServoKit(2)
 
 normalSize = (1280, 960)
 lowresSize = (640, 480)
 rectangles = []
+tracked = "person"
 
 def ReadLabelFile(file_path):
     with open(file_path, 'r') as f:
@@ -63,9 +63,10 @@ def DrawRectangles(request):
                 rect_start[0]+int((rect_end[0]-rect_start[0])/2),
                 rect_end[1]+int((rect_start[1]-rect_end[1])/2)
             )
-            logging.info("Center of the rectangle",center)
             cv2.circle(m.array, center, radius=5, color=(255,0,0), thickness=20)
-            if rect[4] == "person":
+
+            # I only follow one category
+            if rect[4] == tracked: 
                 defineMovement(center)
 
             if len(rect) >= 5:
@@ -81,23 +82,19 @@ def defineMovement(center):
     if(center[0]>(normalSize[0]-(normalSize[0]/4))):
         print("moving left")
         MoveCamera(2,0)
-    if(center[1]<(normalSize[1]/4)):
+    if(center[1]<(normalSize[1]/3)):
         print("moving up")
         MoveCamera(0,1)
-    if(center[1]>(normalSize[1]-(normalSize[1]/4))):
+    if(center[1]>(normalSize[1]-(normalSize[1]/3))):
         print("moving down")
         MoveCamera(0,-1)
-
 
 def MoveCamera(deltaX,deltaY):
     # Motor 0 vertical (0 is looking down )
     # Motor 1 horizontal (0 is looking left)
     # Setangle goes between 0 and 180
-    #print("Move camera: center:", center)
     servoKit.setAngle(ServoKit.x, servoKit.getAngle(ServoKit.x)+deltaX)
     servoKit.setAngle(ServoKit.y, servoKit.getAngle(ServoKit.y)+deltaY)
-
-
 
 def InferenceTensorFlow(image, model, output, labels=None):
     global rectangles
@@ -181,16 +178,13 @@ def main():
 
     picam2.start()
     
-
     servoKit.setAngle(1, 150)
     servoKit.setAngle(0, 150)
-    print("Init code:", servoKit.getAngle(1), servoKit.getAngle(0))
-    global pos
-    pos=(servoKit.getAngle(1), servoKit.getAngle(0))
+
     while True:
         buffer = picam2.capture_buffer("lores")
         grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
-        result = InferenceTensorFlow(grey, args.model, output_file, labels)
+        result = InferenceTensorFlow(grey, args.model, output_file, labels, )
 
 
 if __name__ == '__main__':

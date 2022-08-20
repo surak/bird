@@ -4,9 +4,6 @@
 [submodule "libcamera"]
 	path = libcamera
 	url = git://linuxtv.org/libcamera.git
-[submodule "Arducam-Pivariety-V4L2-Driver"]
-	path = Arducam-Pivariety-V4L2-Driver
-	url = https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver.git
 [submodule "PCA9685"]
 	path = PCA9685
 	url = https://github.com/ArduCAM/PCA9685.git
