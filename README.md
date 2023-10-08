@@ -14,6 +14,17 @@ Most of the time in this project has been trying to make the Arducam 16mp Autofo
 
 - The drivers for the camera: https://www.arducam.com/docs/cameras-for-raspberry-pi/raspberry-pi-libcamera-guide/how-to-use-arducam-16mp-camera-on-rapberry-pi/
 - libcamera from Arducam, for autofocus (same page as arducam drivers)
+
+Camera driver install
+```
+cd ~
+wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+chmod +x ./install_pivariety_pkgs.sh
+sudo ./install_pivariety_pkgs.sh -p libcamera
+sudo ./install_pivariety_pkgs.sh -p libcamera_apps
+sudo apt install python3-opencv
+```
+
 - Adafruit ServoKit https://pypi.org/project/adafruit-circuitpython-servokit/
 - tflite_runtime from pip.
 
