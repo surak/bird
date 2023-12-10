@@ -152,7 +152,12 @@ def main():
     config = picam2.create_preview_configuration(main={"size": normalSize},
                                           lores={"size": lowresSize, "format": "YUV420"})
     picam2.configure(config)
-    picam2.set_controls({"AfTrigger": 1})
+    try:
+        picam2.set_controls({"AfTrigger": 1})
+    except RuntimeError as e:
+        print(f"This camera has no autofocus: {e}")
+        # handle the error here or re-raise if you cannot handle it
+
 
     stride = picam2.stream_configuration("lores")["stride"]
     picam2.post_callback = DrawRectangles
