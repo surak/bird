@@ -21,7 +21,7 @@ servoKit = ServoKit(2)
 normalSize = (1280, 960)
 lowresSize = (640, 480)
 rectangles = []
-tracked = "person"
+target = "person"
 
 def ReadLabelFile(file_path):
     with open(file_path, 'r') as f:
@@ -33,6 +33,7 @@ def ReadLabelFile(file_path):
     return ret
 
 def DrawRectangles(request):
+    global target
     with MappedArray(request, "main") as m:
         for rect in rectangles:
             # print(rect)
@@ -47,7 +48,8 @@ def DrawRectangles(request):
             cv2.circle(m.array, center, radius=5, color=(255,0,0), thickness=20)
 
             # I only follow one category
-            if rect[4] == tracked: 
+            if rect[4] == target: 
+                print("Found ", target)
                 defineMovement(center)
 
             if len(rect) >= 5:
@@ -131,10 +133,12 @@ def InferenceTensorFlow(image, model, output, labels=None):
 
 
 def main():
+    global target
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', help='Path of the detection model.', required=True)
     parser.add_argument('--label', help='Path of the labels file.')
     parser.add_argument('--output', help='File path of the output image.')
+    parser.add_argument('--target', help='What should you follow?')
     args = parser.parse_args()
 
     if (args.output):
@@ -146,6 +150,10 @@ def main():
         labels = ReadLabelFile(args.label)
     else:
         labels = None
+
+    if (args.target):
+        target = args.target
+        print("I will follow ", target)
 
     picam2 = Picamera2()
     picam2.start_preview(Preview.QTGL)
