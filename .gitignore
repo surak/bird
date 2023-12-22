@@ -128,4 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-sc_venv_template
+sc_venv_template/
