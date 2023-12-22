@@ -19,6 +19,7 @@ Most of the time in this project has been trying to make the Arducam 16mp Autofo
 - libcamera from Arducam, for autofocus (same page as arducam drivers)
 
 Camera driver install (only until Raspberry Pi 4 bullseye. Not working with bookworm yet, not working with Pi5, as it needs Debian bookworm)
+The imx519 SHOULD be working but it's not.
 ```
 cd ~
 wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
@@ -33,16 +34,16 @@ sudo apt install python3-opencv
 - Adafruit ServoKit https://pypi.org/project/adafruit-circuitpython-servokit/
 - tflite_runtime from pip.
 
-
 ## Running
 
 - As of today, I'm using mobilenet_v2 heavily quantized, which gave me 30fps, compared to 1.6fps on Yolo7 with ONNX.
-- Check run.sh
-- The ServokitExample.py can be used to guide the pan-tilt servos into a better position.
+- run_app.sh calls uvicorn on port 5000
 
 ## TODO
 
-- The web app works, but now I need to add the callbacks to the ML model again.
+- The web app works
+- There's somethign going on with the rectangles and the detection. I am not sure if it's calculating on the small buffer and going to the big one. 
+    - I think it's because the inference buffer and the display buffer have to be multiples of each other, but I'm not sure.
 - Fine-tune on birds
 - A full pipeline for PyTorch's models to be trained in a supercomputer, and quantized and reduced to run at a decent performance on the Raspberry Pi.
 

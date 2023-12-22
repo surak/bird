@@ -1,5 +1,5 @@
 # encoding: UTF-8
-'''
+"""
     Copyright (c) 2020-8 Arducam <http://www.arducam.com>.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +19,7 @@
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
     OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
     OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import time
 import adafruit_servokit
@@ -48,7 +48,7 @@ class ServoKit(object):
             self.kit.servo[port].angle = 180
         else:
             self.kit.servo[port].angle = angle
-    
+
     def getAngle(self, port):
         return self.kit.servo[port].angle
 
@@ -60,31 +60,29 @@ class ServoKit(object):
             self.kit.servo[i].angle = self.default_angle
 
 
-
-
-
 def test():
     servoKit = ServoKit(4)
     print("Start test")
-    for i in range(0,180, 5):
+    for i in range(0, 180, 5):
         servoKit.setAngle(0, i)
         servoKit.setAngle(2, i)
-        time.sleep(.05)
-    for i in range(180,0,-5):
+        time.sleep(0.05)
+    for i in range(180, 0, -5):
         servoKit.setAngle(0, i)
         servoKit.setAngle(2, i)
-        time.sleep(.05)
+        time.sleep(0.05)
 
-    for i in range(15,145, 5):
+    for i in range(15, 145, 5):
         servoKit.setAngle(1, i)
         servoKit.setAngle(3, i)
-        time.sleep(.05)
-    for i in range(145,15,-5):
+        time.sleep(0.05)
+    for i in range(145, 15, -5):
         servoKit.setAngle(1, i)
         servoKit.setAngle(3, i)
-        time.sleep(.05)
-    
+        time.sleep(0.05)
+
     servoKit.resetAll()
+
 
 if __name__ == "__main__":
     test()

@@ -23,14 +23,16 @@ lowresSize = (640, 480)
 rectangles = []
 target = "person"
 
+
 def ReadLabelFile(file_path):
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         lines = f.readlines()
     ret = {}
     for line in lines:
         pair = line.strip().split(maxsplit=1)
         ret[int(pair[0])] = pair[1].strip()
     return ret
+
 
 def DrawRectangles(request):
     global target
@@ -39,45 +41,57 @@ def DrawRectangles(request):
             # print(rect)
             rect_start = (int(rect[0] * 2) - 5, int(rect[1] * 2) - 5)
             rect_end = (int(rect[2] * 2) + 5, int(rect[3] * 2) + 5)
-            logging.info("rect_start:", rect_start, "rect_end:",rect_end)
+            logging.info("rect_start:", rect_start, "rect_end:", rect_end)
             cv2.rectangle(m.array, rect_start, rect_end, (0, 255, 0, 0))
             center = (
-                rect_start[0]+int((rect_end[0]-rect_start[0])/2),
-                rect_end[1]+int((rect_start[1]-rect_end[1])/2)
+                rect_start[0] + int((rect_end[0] - rect_start[0]) / 2),
+                rect_end[1] + int((rect_start[1] - rect_end[1]) / 2),
             )
-            cv2.circle(m.array, center, radius=5, color=(255,0,0), thickness=20)
+            cv2.circle(m.array, center, radius=5, color=(255, 0, 0), thickness=20)
 
             # I only follow one category
-            if rect[4] == target: 
+            if rect[4] == target:
                 print("Found ", target)
                 defineMovement(center)
 
             if len(rect) >= 5:
-                text = rect[4]+": {:.2f}".format(rect[5]*100)+"%"
+                text = rect[4] + ": {:.2f}".format(rect[5] * 100) + "%"
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(m.array, text, (int(rect[0] * 2) + 10, int(rect[1] * 2) - 12), font, 2, (255, 255, 255), 4, cv2.LINE_AA)
+                cv2.putText(
+                    m.array,
+                    text,
+                    (int(rect[0] * 2) + 10, int(rect[1] * 2) - 12),
+                    font,
+                    2,
+                    (255, 255, 255),
+                    4,
+                    cv2.LINE_AA,
+                )
+
 
 def defineMovement(center):
     # If something is found on the first or last quarter of the image, try to bring it to the center
-    if(center[0]<(normalSize[0]/4)):
+    if center[0] < (normalSize[0] / 4):
         print("moving right")
-        MoveCamera(-2,0)
-    if(center[0]>(normalSize[0]-(normalSize[0]/4))):
+        MoveCamera(-2, 0)
+    if center[0] > (normalSize[0] - (normalSize[0] / 4)):
         print("moving left")
-        MoveCamera(2,0)
-    if(center[1]<(normalSize[1]/3)):
+        MoveCamera(2, 0)
+    if center[1] < (normalSize[1] / 3):
         print("moving up")
-        MoveCamera(0,1)
-    if(center[1]>(normalSize[1]-(normalSize[1]/3))):
+        MoveCamera(0, 1)
+    if center[1] > (normalSize[1] - (normalSize[1] / 3)):
         print("moving down")
-        MoveCamera(0,-1)
+        MoveCamera(0, -1)
 
-def MoveCamera(deltaX,deltaY):
+
+def MoveCamera(deltaX, deltaY):
     # Motor 0 vertical (0 is looking down )
     # Motor 1 horizontal (0 is looking left)
     # Setangle goes between 0 and 180
-    servoKit.setAngle(ServoKit.x, servoKit.getAngle(ServoKit.x)+deltaX)
-    servoKit.setAngle(ServoKit.y, servoKit.getAngle(ServoKit.y)+deltaY)
+    servoKit.setAngle(ServoKit.x, servoKit.getAngle(ServoKit.x) + deltaX)
+    servoKit.setAngle(ServoKit.y, servoKit.getAngle(ServoKit.y) + deltaY)
+
 
 def InferenceTensorFlow(image, model, output, labels=None):
     global rectangles
@@ -87,10 +101,10 @@ def InferenceTensorFlow(image, model, output, labels=None):
 
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    height = input_details[0]['shape'][1]
-    width = input_details[0]['shape'][2]
+    height = input_details[0]["shape"][1]
+    width = input_details[0]["shape"][2]
     floating_model = False
-    if input_details[0]['dtype'] == np.float32:
+    if input_details[0]["dtype"] == np.float32:
         floating_model = True
 
     rgb = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
@@ -102,14 +116,14 @@ def InferenceTensorFlow(image, model, output, labels=None):
     if floating_model:
         input_data = (np.float32(input_data) - 127.5) / 127.5
 
-    interpreter.set_tensor(input_details[0]['index'], input_data)
+    interpreter.set_tensor(input_details[0]["index"], input_data)
 
     interpreter.invoke()
 
-    detected_boxes = interpreter.get_tensor(output_details[0]['index'])
-    detected_classes = interpreter.get_tensor(output_details[1]['index'])
-    detected_scores = interpreter.get_tensor(output_details[2]['index'])
-    num_boxes = interpreter.get_tensor(output_details[3]['index'])
+    detected_boxes = interpreter.get_tensor(output_details[0]["index"])
+    detected_classes = interpreter.get_tensor(output_details[1]["index"])
+    detected_scores = interpreter.get_tensor(output_details[2]["index"])
+    num_boxes = interpreter.get_tensor(output_details[3]["index"])
 
     rectangles = []
     for i in range(int(num_boxes)):
@@ -135,30 +149,31 @@ def InferenceTensorFlow(image, model, output, labels=None):
 def main():
     global target
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', help='Path of the detection model.', required=True)
-    parser.add_argument('--label', help='Path of the labels file.')
-    parser.add_argument('--output', help='File path of the output image.')
-    parser.add_argument('--target', help='What should you follow?')
+    parser.add_argument("--model", help="Path of the detection model.", required=True)
+    parser.add_argument("--label", help="Path of the labels file.")
+    parser.add_argument("--output", help="File path of the output image.")
+    parser.add_argument("--target", help="What should you follow?")
     args = parser.parse_args()
 
-    if (args.output):
+    if args.output:
         output_file = args.output
     else:
-        output_file = 'out.jpg'
+        output_file = "out.jpg"
 
-    if (args.label):
+    if args.label:
         labels = ReadLabelFile(args.label)
     else:
         labels = None
 
-    if (args.target):
+    if args.target:
         target = args.target
         print("I will follow ", target)
 
     picam2 = Picamera2()
     picam2.start_preview(Preview.QTGL)
-    config = picam2.create_preview_configuration(main={"size": normalSize},
-                                          lores={"size": lowresSize, "format": "YUV420"})
+    config = picam2.create_preview_configuration(
+        main={"size": normalSize}, lores={"size": lowresSize, "format": "YUV420"}
+    )
     picam2.configure(config)
     try:
         picam2.set_controls({"AfTrigger": 1})
@@ -166,20 +181,24 @@ def main():
         print(f"This camera has no autofocus: {e}")
         # handle the error here or re-raise if you cannot handle it
 
-
     stride = picam2.stream_configuration("lores")["stride"]
     picam2.post_callback = DrawRectangles
 
     picam2.start()
-    
+
     servoKit.setAngle(1, 150)
     servoKit.setAngle(0, 150)
 
     while True:
         buffer = picam2.capture_buffer("lores")
-        grey = buffer[:stride * lowresSize[1]].reshape((lowresSize[1], stride))
-        result = InferenceTensorFlow(grey, args.model, output_file, labels, )
+        grey = buffer[: stride * lowresSize[1]].reshape((lowresSize[1], stride))
+        result = InferenceTensorFlow(
+            grey,
+            args.model,
+            output_file,
+            labels,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

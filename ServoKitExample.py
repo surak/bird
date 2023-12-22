@@ -1,5 +1,5 @@
 # encoding: UTF-8
-'''
+"""
     Arducam ptz controller.
 
     Copyright (c) 2020-08 Arducam <http://www.arducam.com>.
@@ -21,7 +21,7 @@
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
     OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
     OR OTHER DEALINGS IN THE SOFTWARE.
-'''
+"""
 
 import os
 import sys
@@ -32,15 +32,16 @@ import curses
 global image_count
 image_count = 0
 
+
 # Rendering status bar
 def RenderStatusBar(stdscr):
     height, width = stdscr.getmaxyx()
     statusbarstr = "Press 'q' to exit"
     stdscr.attron(curses.color_pair(3))
-    stdscr.addstr(height-1, 0, statusbarstr)
-    stdscr.addstr(height-1, len(statusbarstr), " " *
-                  (width - len(statusbarstr) - 1))
+    stdscr.addstr(height - 1, 0, statusbarstr)
+    stdscr.addstr(height - 1, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
     stdscr.attroff(curses.color_pair(3))
+
 
 # Rendering description
 def RenderDescription(stdscr):
@@ -56,31 +57,32 @@ def RenderDescription(stdscr):
     stdscr.addstr(desc_y + 3, 0, servo2_val, curses.color_pair(1))
     stdscr.addstr(desc_y + 4, 0, servo3_val, curses.color_pair(1))
 
+
 # Rendering  middle text
 def RenderMiddleText(stdscr, k, servoKit):
     # get height and width of the window.
     height, width = stdscr.getmaxyx()
     # Declaration of strings
-    title = "Arducam Controller"[:width-1]
-    subtitle = ""[:width-1]
-    keystr = "Last key pressed: {}".format(k)[:width-1]
+    title = "Arducam Controller"[: width - 1]
+    subtitle = ""[: width - 1]
+    keystr = "Last key pressed: {}".format(k)[: width - 1]
 
     # Obtain device infomation
-    servo0_val = "Servo0   : {:.2f}".format(servoKit.getAngle(0))[:width-1]
-    servo1_val = "Servo1   : {:.2f}".format(servoKit.getAngle(1))[:width-1]
-    servo2_val = "Servo2   : {:.2f}".format(servoKit.getAngle(2))[:width-1]
-    servo3_val = "Servo3   : {:.2f}".format(servoKit.getAngle(3))[:width-1]
+    servo0_val = "Servo0   : {:.2f}".format(servoKit.getAngle(0))[: width - 1]
+    servo1_val = "Servo1   : {:.2f}".format(servoKit.getAngle(1))[: width - 1]
+    servo2_val = "Servo2   : {:.2f}".format(servoKit.getAngle(2))[: width - 1]
+    servo3_val = "Servo3   : {:.2f}".format(servoKit.getAngle(3))[: width - 1]
 
     if k == 0:
-        keystr = "No key press detected..."[:width-1]
+        keystr = "No key press detected..."[: width - 1]
 
     # Centering calculations
     start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
-    start_x_subtitle = int(
-        (width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
+    start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
     start_x_keystr = int((width // 2) - (len(keystr) // 2) - len(keystr) % 2)
     start_x_device_info = int(
-        (width // 2) - (len("MotorX    : 00000") // 2) - len("MotorX    : 00000") % 2)
+        (width // 2) - (len("MotorX    : 00000") // 2) - len("MotorX    : 00000") % 2
+    )
     start_y = int((height // 2) - 6)
 
     # Turning on attributes for title
@@ -96,7 +98,7 @@ def RenderMiddleText(stdscr, k, servoKit):
 
     # Print rest of text
     stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
-    stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
+    stdscr.addstr(start_y + 3, (width // 2) - 2, "-" * 4)
     stdscr.addstr(start_y + 5, start_x_keystr, keystr)
     # Print device info
     stdscr.addstr(start_y + 6, start_x_device_info, servo0_val)
@@ -104,19 +106,20 @@ def RenderMiddleText(stdscr, k, servoKit):
     stdscr.addstr(start_y + 8, start_x_device_info, servo2_val)
     stdscr.addstr(start_y + 9, start_x_device_info, servo3_val)
 
+
 # parse input key
 def parseKey(k, servoKit, camera):
     global image_count
     motor_step = 5
-    if k == ord('a'):
+    if k == ord("a"):
         servoKit.setAngle(1, servoKit.getAngle(1) - motor_step)
-    elif k == ord('d'):
+    elif k == ord("d"):
         servoKit.setAngle(1, servoKit.getAngle(1) + motor_step)
-    elif k == ord('w'):
+    elif k == ord("w"):
         servoKit.setAngle(0, servoKit.getAngle(0) + motor_step)
-    elif k == ord('s'):
+    elif k == ord("s"):
         servoKit.setAngle(0, servoKit.getAngle(0) - motor_step)
-    elif k == ord('r'):
+    elif k == ord("r"):
         servoKit.resetAll()
     elif k == curses.KEY_LEFT:
         servoKit.setAngle(1, servoKit.getAngle(1) - motor_step)
@@ -148,7 +151,7 @@ def draw_menu(stdscr, camera):
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     # Loop where k is the last character pressed
-    while (k != ord('q')):
+    while k != ord("q"):
         # Initialization
         stdscr.clear()
         # Flush all input buffers.
