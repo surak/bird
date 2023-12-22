@@ -47,3 +47,6 @@ sudo apt install python3-opencv
 - Add as parameters what to follow
 - Fine-tune on birds
 - A full pipeline for PyTorch's models to be trained in a supercomputer, and quantized and reduced to run at a decent performance on the Raspberry Pi.
+
+
+- The mjpeg server with gunicorn comes from https://github.com/miguelgrinberg/flask-video-streaming
