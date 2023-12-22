@@ -3,6 +3,9 @@ from importlib import import_module
 import os
 from flask import Flask, render_template, Response, request
 from servo import *
+import stackprinter
+
+stackprinter.set_excepthook(style="darkbg2")
 
 # The original example created a base_camera, with different "drivers" for different cameras.
 # Check it at https://github.com/miguelgrinberg/flask-video-streaming

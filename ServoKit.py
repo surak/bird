@@ -23,6 +23,7 @@
 
 import time
 import adafruit_servokit
+import logging
 
 
 class ServoKit(object):
@@ -31,11 +32,11 @@ class ServoKit(object):
     y = 0
 
     def __init__(self, num_ports):
-        print("Initializing the servo...")
+        logging.info("Initializing the servo...")
         self.kit = adafruit_servokit.ServoKit(channels=16)
         self.num_ports = num_ports
         self.resetAll()
-        print("Initializing complete.")
+        logging.info("Initializing complete.")
 
     # Motor (port) 0 vertical (0 is looking down )
     # Motor 1 horizontal (0 is looking left)
@@ -62,7 +63,7 @@ class ServoKit(object):
 
 def test():
     servoKit = ServoKit(4)
-    print("Start test")
+    logging.info("Start test")
     for i in range(0, 180, 5):
         servoKit.setAngle(0, i)
         servoKit.setAngle(2, i)

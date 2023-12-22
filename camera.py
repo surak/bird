@@ -32,16 +32,16 @@ labels = ReadLabelFile("coco_labels.txt")
 def defineMovement(center):
     # If something is found on the first or last quarter of the image, try to bring it to the center
     if center[0] < (normalSize[0] / 3):
-        print("moving left")
+        logging.info("moving left")
         servo.left()
     if center[0] > (normalSize[0] - (normalSize[0] / 3)):
-        print("moving right")
+        logging.info("moving right")
         servo.right()
     if center[1] < (normalSize[1] / 3):
-        print("moving up")
+        logging.info("moving up")
         servo.up()
     if center[1] > (normalSize[1] - (normalSize[1] / 3)):
-        print("moving down")
+        logging.info("moving down")
         servo.down()
 
 
@@ -51,7 +51,7 @@ class Camera(BaseCamera):
         # MappedArray writes directly into the camera buffer, not into a copy
         with MappedArray(request, "main") as m:
             for rect in rectangles:
-                # print(rect)
+                # logging.info(rect)
                 rect_start = (int(rect[0] * 2) - 5, int(rect[1] * 2) - 5)
                 rect_end = (int(rect[2] * 2) + 5, int(rect[3] * 2) + 5)
                 logging.info("rect_start:", rect_start, "rect_end:", rect_end)
@@ -64,7 +64,7 @@ class Camera(BaseCamera):
 
                 # I only follow one category
                 if rect[4] == target:
-                    # print("Found ", target)
+                    # logging.info("Found ", target)
                     defineMovement(center)
 
                 if len(rect) >= 5:
@@ -126,12 +126,12 @@ class Camera(BaseCamera):
                 box = [xmin, ymin, xmax, ymax]
                 rectangles.append(box)
                 if labels:
-                    # print(labels[classId], 'score = ', score)
+                    # logging.info(labels[classId], 'score = ', score)
                     rectangles[-1].append(labels[classId])
                     rectangles[-1].append(score)
                 else:
                     pass
-                    # print('score = ', score)
+                    # logging.info('score = ', score)
 
     @staticmethod
     def frames():
@@ -145,7 +145,7 @@ class Camera(BaseCamera):
             try:
                 camera.set_controls({"AfTrigger": 1})
             except RuntimeError as e:
-                print(f"This camera has no autofocus: {e}")
+                logging.error(f"This camera has no autofocus: {e}")
                 # handle the error here or re-raise if you cannot handle it
             stride = camera.stream_configuration("lores")["stride"]
             camera.pre_callback = Camera.DrawRectangles
