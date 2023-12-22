@@ -42,9 +42,7 @@ sudo apt install python3-opencv
 
 ## TODO
 
-- Remove the QT dependency and make it stream to the web
-- Add the pan-tilt controls to the main code / web
-- Add as parameters what to follow
+- The web app works, but now I need to add the callbacks to the ML model again.
 - Fine-tune on birds
 - A full pipeline for PyTorch's models to be trained in a supercomputer, and quantized and reduced to run at a decent performance on the Raspberry Pi.
 

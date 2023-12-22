@@ -1,9 +1,73 @@
 <html>
   <head>
     <title>Video Streaming Demonstration</title>
+    <style>
+      .button-container {
+        display: grid;
+        grid-template-areas:
+          '. up .'
+          'left . right'
+          '. down .';
+        gap: 5px;
+        justify-content: center;
+        align-items: center;
+      }
+      .button-container div {
+        padding: 10px 20px;
+      }
+      .button-up { grid-area: up; }
+      .button-down { grid-area: down; }
+      .button-left { grid-area: left; }
+      .button-right { grid-area: right; }
+    </style>
   </head>
   <body>
     <h1>Video Streaming Demonstration</h1>
     <img src="{{ url_for('video_feed') }}">
+
+    <div class="button-container">
+      <div class="button-up">
+        <form id="form-up" method="POST">
+          <input type="hidden" name="up" value="up">
+          <button type="submit" name="up">up</button>
+        </form>
+      </div>
+      <div class="button-left">
+        <form id="form-left" method="POST">
+          <input type="hidden" name="left" value="left">
+          <button type="submit" name="left">left</button>
+        </form>
+      </div>
+      <div class="button-right">
+        <form id="form-right" method="POST">
+          <input type="hidden" name="right" value="right">
+          <button type="submit" name="right">right</button>
+        </form>
+      </div>
+      <div class="button-down">
+        <form id="form-down" method="POST">
+          <input type="hidden" name="down" value="down">
+          <button type="submit" name="down">down</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('keydown', function(event) {
+        switch(event.key) {
+          case 'ArrowUp':
+            document.getElementById('form-up').submit();
+            break;
+          case 'ArrowDown':
+            document.getElementById('form-down').submit();
+            break;
+          case 'ArrowLeft':
+            document.getElementById('form-left').submit();
+            break;
+          case 'ArrowRight':
+            document.getElementById('form-right').submit();
+            break;
+        }
+      });
+    </script>
   </body>
 </html>
