@@ -12,24 +12,52 @@ Most of the time in this project has been trying to make the Arducam 16mp Autofo
 
 ## Software requirements:
 
-- The camera/opencv stack comes from Debian packages (the pip opencv wheels break on the Pi): `sudo apt install python3-picamera2 python3-libcamera python3-opencv python3-numpy python3-pil`
-- Everything else is installed by uv into a plain `.venv`:
-```
-uv venv --system-site-packages --python /usr/bin/python3 .venv
-uv sync --inexact
-```
-  The venv must hang off the **system** Python with `--system-site-packages`: a uv-managed interpreter does not see Debian's `dist-packages`, so picamera2/cv2/numpy would silently be missing. `uv sync` reuses an existing venv, so the flag survives later installs.
+- The camera/opencv stack comes from Debian packages (the pip opencv wheels break on the Pi); uv manages everything else in `.venv`. Every system dependency - including uv itself, git and the Arducam driver bits - is in the copy-paste block under "TL;DR" below.
+- Trap worth knowing: the venv must be created with `--system-site-packages` off the **system** Python *before* `uv sync`. If uv creates the venv itself (any stray `uv sync`/`uv run`), the flag is off and cv2/picamera2 raise `ModuleNotFoundError` although the system has them.
 - The documentation of the Arducam 16mp: https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/Quick-Start-Guide/#software-guide-for-imx519-autofocus-camera
 
 
-TL;DR:
-```
+## TL;DR — one copy-paste on a clean Raspberry Pi
+
+From flashing the SD card to serving video and steering the rig. Safe to re-run on a
+partly set up system (it is idempotent and rebuilds the Python env from scratch).
+
+```sh
+# --- 1. System packages: camera/opencv stack (apt only!), git, curl ---
+sudo apt update
+sudo apt install -y git curl python3-picamera2 python3-libcamera python3-opencv python3-numpy python3-pil
+
+# --- 2. Arducam IMX519 support. Only needed on older images; on current
+#     Raspberry Pi OS the stock libcamera already drives the IMX519. ---
 cd ~
-wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+curl -fsSL -o install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
 chmod +x ./install_pivariety_pkgs.sh
 sudo ./install_pivariety_pkgs.sh -p libcamera
 sudo ./install_pivariety_pkgs.sh -p libcamera_apps
-sudo apt install python3-opencv
+
+# --- 3. I2C for the pan-tilt servos (saves it for every boot, modprobe makes it live now) ---
+sudo raspi-config nonint do_i2c 0
+sudo modprobe i2c-dev
+
+# --- 4. uv itself ---
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
+
+# --- 5. The code ---
+mkdir -p ~/Devel
+cd ~/Devel/bird 2>/dev/null || { cd ~/Devel && git clone https://github.com/surak/bird.git && cd bird; }
+git pull --ff-only 2>/dev/null || true
+
+# --- 6. Python environment. Recreate the venv WITH --system-site-packages:
+#     if uv creates it by itself (a stray `uv sync` or `uv run`), the flag is
+#     missing and cv2/picamera2 raise ModuleNotFoundError although the system
+#     has them. rm -rf heals any such half-done .venv. ---
+rm -rf .venv
+uv venv --system-site-packages --python /usr/bin/python3 .venv
+uv sync --inexact
+
+# --- 7. Verify every import, then serve on port 5000 (open http://<pi-ip>:5000) ---
+.venv/bin/python -c "import cv2, numpy, PIL, picamera2, flask, stackprinter, adafruit_servokit; from ai_edge_litert import interpreter; print('all imports OK')" && ./run-app.sh
 ```
 
 
