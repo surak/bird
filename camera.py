@@ -54,7 +54,7 @@ class Camera(BaseCamera):
                 # logging.info(rect)
                 rect_start = (int(rect[0] * 2) - 5, int(rect[1] * 2) - 5)
                 rect_end = (int(rect[2] * 2) + 5, int(rect[3] * 2) + 5)
-                logging.info("rect_start:", rect_start, "rect_end:", rect_end)
+                logging.info("rect_start: %s rect_end: %s", rect_start, rect_end)
                 cv2.rectangle(m.array, rect_start, rect_end, (0, 255, 0, 0))
                 center = (
                     rect_start[0] + int((rect_end[0] - rect_start[0]) / 2),
@@ -111,18 +111,18 @@ class Camera(BaseCamera):
         detected_boxes = interpreter.get_tensor(output_details[0]["index"])
         detected_classes = interpreter.get_tensor(output_details[1]["index"])
         detected_scores = interpreter.get_tensor(output_details[2]["index"])
-        num_boxes = interpreter.get_tensor(output_details[3]["index"])
+        num_boxes = int(interpreter.get_tensor(output_details[3]["index"])[0])
 
         rectangles = []
-        for i in range(int(num_boxes)):
+        for i in range(num_boxes):
             top, left, bottom, right = detected_boxes[0][i]
             classId = int(detected_classes[0][i])
             score = detected_scores[0][i]
             if score > 0.5:
                 xmin = left * initial_w
-                ymin = bottom * initial_h
+                ymin = top * initial_h
                 xmax = right * initial_w
-                ymax = top * initial_h
+                ymax = bottom * initial_h
                 box = [xmin, ymin, xmax, ymax]
                 rectangles.append(box)
                 if labels:

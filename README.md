@@ -73,8 +73,6 @@ uv sync --inexact
 
 ## TODO
 
-- There's something going on with the rectangles and the detection. I am not sure if it's calculating on the small buffer and going to the big one. 
-    - I think it's because the inference buffer and the display buffer have to be multiples of each other, but I'm not sure.
 - Fine-tune on birds
 - A full pipeline for PyTorch's models to be trained in a supercomputer, and quantized and reduced to run at a decent performance on the Raspberry Pi.
 - Fix the autofocus on the Pi5. It's not working, and I'm not sure why.
