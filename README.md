@@ -27,8 +27,19 @@ partly set up system (it is idempotent and rebuilds the Python env from scratch)
 sudo apt update
 sudo apt install -y git curl python3-picamera2 python3-libcamera python3-opencv python3-numpy python3-pil
 
-# --- 2. Arducam IMX519 support. Only needed on older images; on current
-#     Raspberry Pi OS the stock libcamera already drives the IMX519. ---
+# --- 2. Camera: force the IMX519, do not trust autodetect. On BOTH Raspberry Pi 4
+#     and Pi 5, camera_auto_detect=1 is flaky for this sensor (upstream dmesg probe
+#     ends `imx519 0-001a: probe failed with error -5` although the identical camera
+#     works on the twin rig). Disable it and name the sensor explicitly in
+#     /boot/firmware/config.txt (near camera_auto_detect), then REBOOT:
+#
+#         camera_auto_detect=0
+#         dtoverlay=imx519
+#
+#     Expected after `rpicam-hello --list-cameras`: `0 : imx519 [4656x3496 10-bit
+#     RGGB]`. The stock libcamera already drives the IMX519 on current Raspberry Pi
+#     OS - install_pivariety_pkgs.sh below is for stale images only, never run it
+#     on a current image before this config line has been tried and rebooted. ---
 cd ~
 curl -fsSL -o install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
 chmod +x ./install_pivariety_pkgs.sh
