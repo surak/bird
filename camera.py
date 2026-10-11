@@ -7,7 +7,7 @@ from servo import *
 import logging
 import cv2
 import numpy as np
-import tflite_runtime.interpreter as tflite
+from ai_edge_litert import interpreter as tflite
 from PIL import Image, ImageDraw, ImageFont
 
 

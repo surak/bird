@@ -1,0 +1,18 @@
+[project]
+name = "bird"
+version = "0.1.0"
+description = "Bird detector: Arducam 16MP pan-tilt rig with TFLite object detection and a web UI"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3",
+    "gunicorn>=22",
+    "stackprinter>=0.2",
+    "adafruit-circuitpython-servokit>=1.3",
+    # tflite-runtime is abandoned upstream (last release 2.14.0, cp311 max).
+    # ai-edge-litert is its continuation from Google (same Interpreter API).
+    "ai-edge-litert>=2.3",
+]
+
+[tool.uv]
+# Plain app, not an installable package.
+package = false

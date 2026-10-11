@@ -12,8 +12,13 @@ Most of the time in this project has been trying to make the Arducam 16mp Autofo
 
 ## Software requirements:
 
-- python3-opencv as a debian package. As of December 2023, the python-opencv from pip will fail because of the missing QT stuff.
-- Stefan's virtual env manager: https://gitlab.jsc.fz-juelich.de/kesselheim1/sc_venv_template - symlink the requirements from here to it, and cleanup modules.txt
+- The camera/opencv stack comes from Debian packages (the pip opencv wheels break on the Pi): `sudo apt install python3-picamera2 python3-libcamera python3-opencv python3-numpy python3-pil`
+- Everything else is installed by uv into a plain `.venv`:
+```
+uv venv --system-site-packages --python /usr/bin/python3 .venv
+uv sync --inexact
+```
+  The venv must hang off the **system** Python with `--system-site-packages`: a uv-managed interpreter does not see Debian's `dist-packages`, so picamera2/cv2/numpy would silently be missing. `uv sync` reuses an existing venv, so the flag survives later installs.
 - The documentation of the Arducam 16mp: https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/Quick-Start-Guide/#software-guide-for-imx519-autofocus-camera
 
 
@@ -28,14 +33,15 @@ sudo apt install python3-opencv
 ```
 
 
-### Already on requirements.txt: 
+### Python packages (pyproject.toml):
 - Adafruit ServoKit https://pypi.org/project/adafruit-circuitpython-servokit/
-- tflite_runtime from pip.
+- ai-edge-litert, the TFLite interpreter. It replaces `tflite-runtime`, which is abandoned upstream (last release supports Python ≤ 3.11): LiteRT is its continuation with the same `Interpreter` API.
+- flask + gunicorn (the web UI) and stackprinter (readable tracebacks)
 
 ## Running
 
 - As of today, I'm using mobilenet_v2 heavily quantized, which gave me 30fps, compared to 1.6fps on Yolo7 with ONNX.
-- run_app.sh calls uvicorn on port 5000
+- run-app.sh runs gunicorn on port 5000
 
 ## TODO
 
