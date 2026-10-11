@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 sc_venv_template/
-
+.venv
+venv
 .vscode
